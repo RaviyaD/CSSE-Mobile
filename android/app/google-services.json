@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1040527104801",
+    "firebase_url": "https://procurement-a8350.firebaseio.com",
+    "project_id": "procurement-a8350",
+    "storage_bucket": "procurement-a8350.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1040527104801:android:e8046e7fb96ed00f673c60",
+        "android_client_info": {
+          "package_name": "com.sitemanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1040527104801-d0q4bu5plhhvkr29drlb2c8vh365vadc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7KnDsft3YydmUHGfQpGnzH4moh8aqmwI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040527104801-d0q4bu5plhhvkr29drlb2c8vh365vadc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
