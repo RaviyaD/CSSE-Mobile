@@ -24,6 +24,14 @@ class OrderView extends Component{
 
     }
 
+    componentWillReceiveProps(props): void {
+        this.setState({
+            key:props.route.params.key
+        }, () =>{
+            this.componentDidMount()
+        })
+    }
+
     deleteOrder = () => {
         firebase.database().ref('/Orders/' + this.state.key).remove().then(r => {
             this.props.navigation.navigate('Home')

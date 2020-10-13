@@ -20,11 +20,13 @@ class OrderList extends Component {
                 this.setState((state) => ({
                     orderList: [...state.orderList, element]
                 }));
+                console.log(item.key)
             });
         })
     }
 
     toView = (key) => {
+        console.log(key+"press");
         this.props.navigation.navigate('OrderView', {
             key: key,
         });

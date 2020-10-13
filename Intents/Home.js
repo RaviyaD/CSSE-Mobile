@@ -7,14 +7,14 @@ import Icon from 'react-native-vector-icons/Ionicons';
 class Home extends Component{
     render(){
         return(
-            <View style={styles.container}>
+            <View>
                 <Icon
                     style={styles.icon}
                     onPress={() => this.props.navigation.openDrawer()}
                     name="md-menu"
                     size={30}
                 />
-                Home
+
             </View>
         )
     }
