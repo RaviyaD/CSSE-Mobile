@@ -14,7 +14,7 @@ class Home extends Component{
                     name="md-menu"
                     size={30}
                 />
-                Home
+                <Text>Home</Text>
             </View>
         )
     }
