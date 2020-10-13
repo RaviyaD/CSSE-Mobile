@@ -2,17 +2,17 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import OrderList from './Intents/OrderList';
-import DraftList from './Intents/DraftList';
-import AddOrder from './Intents/AddOrder';
-import Limit from "./Intents/Limit";
-import Item from "./Intents/Item";
+import OrderList from './Intents/Sitemanager/OrderList';
+import DraftList from './Intents/Sitemanager/DraftList';
+import AddOrder from './Intents/Sitemanager/AddOrder';
+import Limit from "./Intents/Sitemanager/Limit";
+import Item from "./Intents/Sitemanager/Item";
 import {Component} from 'react';
 import * as firebase from 'firebase';
-import OrderView from './Intents/OrderView';
-import UpdateOrder from './Intents/UpdateOrder';
-import UseDraft from './Intents/UseDraft';
-import Budget from "./Intents/Budget";
+import OrderView from './Intents/Sitemanager/OrderView';
+import UpdateOrder from './Intents/Sitemanager/UpdateOrder';
+import UseDraft from './Intents/Sitemanager/UseDraft';
+import Budget from "./Intents/Sitemanager/Budget";
 import Home from './Intents/Home';
 const firebaseConfig = {
     apiKey: 'AIzaSyBdjP3em_r5nnmOc0e69TRXxq5kUHGYXNc',
