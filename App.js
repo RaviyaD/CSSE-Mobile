@@ -5,11 +5,14 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import OrderList from './Intents/OrderList';
 import DraftList from './Intents/DraftList';
 import AddOrder from './Intents/AddOrder';
+import Limit from "./Intents/Limit";
+import Item from "./Intents/Item";
 import {Component} from 'react';
 import * as firebase from 'firebase';
 import OrderView from './Intents/OrderView';
 import UpdateOrder from './Intents/UpdateOrder';
 import UseDraft from './Intents/UseDraft';
+import Budget from "./Intents/Budget";
 import Home from './Intents/Home';
 const firebaseConfig = {
     apiKey: 'AIzaSyBdjP3em_r5nnmOc0e69TRXxq5kUHGYXNc',
@@ -34,6 +37,9 @@ export default class App extends Component {
                     <Drawer.Screen name="Home" component={Home}/>
                     <Drawer.Screen name="OrderList" component={OrderList}/>
                     <Drawer.Screen name="DraftList" component={DraftList}/>
+                    <Drawer.Screen name="Limit" component={Limit} />
+                    <Drawer.Screen name="Item" component={Item} />
+                    <Drawer.Screen name="Budget" component={Budget} />
                     <Drawer.Screen name="AddOrder" component={AddOrder} options={{
                         drawerLabel: () => null,
                         title: null,
@@ -56,6 +62,10 @@ export default class App extends Component {
                         title: null,
                         drawerIcon: () => null,
                     }}/>
+
+
+
+
                 </Drawer.Navigator>
             </NavigationContainer>
         );
