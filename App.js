@@ -5,15 +5,17 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import OrderList from './Intents/Sitemanager/OrderList';
 import DraftList from './Intents/Sitemanager/DraftList';
 import AddOrder from './Intents/Sitemanager/AddOrder';
-import Limit from "./Intents/Sitemanager/Limit";
-import Item from "./Intents/Sitemanager/Item";
+import Limit from "./Intents/Limit";
+import Item from "./Intents/Item";
 import {Component} from 'react';
 import * as firebase from 'firebase';
 import OrderView from './Intents/Sitemanager/OrderView';
 import UpdateOrder from './Intents/Sitemanager/UpdateOrder';
 import UseDraft from './Intents/Sitemanager/UseDraft';
-import Budget from "./Intents/Sitemanager/Budget";
+import Budget from "./Intents/Budget";
 import Home from './Intents/Home';
+import returnView from './Intents/Sitemanager/returnView';
+
 const firebaseConfig = {
     apiKey: 'AIzaSyBdjP3em_r5nnmOc0e69TRXxq5kUHGYXNc',
     authDomain: 'procurement-a8350.firebaseapp.com',
@@ -62,8 +64,11 @@ export default class App extends Component {
                         title: null,
                         drawerIcon: () => null,
                     }}/>
-
-
+                    <Drawer.Screen name="returnView" component={returnView} options={{
+                        drawerLabel: () => null,
+                        title: null,
+                        drawerIcon: () => null,
+                    }}/>
 
 
                 </Drawer.Navigator>
