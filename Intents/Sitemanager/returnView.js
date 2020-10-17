@@ -46,14 +46,21 @@ class returnView extends Component {
 
         let log = [];
         let previous = [];
+        let status= 'Placed';
+
         this.state.listUpdated.map((item, i) => {
             if (item.received - this.state.list[i].received !== 0 && !isNaN(item.received)) {
+
+                if(parseInt(item.received) !== parseInt(item.quantity))
+                    status='Approved';
+
                 log = [...log, {
                     item: item.item,
                     quantityReceived: item.received - this.state.list[i].received,
                 }];
             }
         });
+
         if (this.state.logList !== undefined) {
             previous = this.state.logList;
         }
@@ -65,6 +72,7 @@ class returnView extends Component {
                     date: new Date(),
                     history: log,
                 }],
+                status:status
             }).then(() => {
                 console.log('Updated');
                 this.props.navigation.navigate('Home');

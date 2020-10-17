@@ -12,7 +12,7 @@ class Home extends Component{
         flatList:[]
     };
     componentDidMount(): void {
-        firebase.database().ref('Orders').orderByChild('status').equalTo('Placed')
+        firebase.database().ref('Orders').orderByChild('status').equalTo('Approved')
             .on('value',snapshot => {
                 this.setState({
                     orderList: []
