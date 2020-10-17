@@ -1,6 +1,6 @@
 import React from 'react';
 import {Component} from 'react';
-import {TextInput, StyleSheet, ScrollView, View, Text, TouchableOpacity, Button} from 'react-native';
+import {TextInput, StyleSheet, Image, View, Text, TouchableOpacity, Button} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as firebase from "firebase";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -52,8 +52,8 @@ export default class Login extends Component{
 
 
                 <Text style={{textAlign:'center', fontSize: 30,fontWeight:'bold', color:'lightskyblue',top:'5%'}}>Login</Text>
-                <View style={{borderWidth:2, height:'70%', width:'80%', borderColor: 'lightskyblue', left:'10%',top:'5%'}}>
-
+                <View style={{borderWidth:5, height:'70%', width:'80%', borderColor: 'lightskyblue', left:'10%',top:'10%'}}>
+                    <Image style={{ width: 120, height: 120, marginLeft:'30%', borderWidth: 2, marginTop:'10%'}} source={require('../assets/main2.png')}/>
 
                     <Text style={styles.inputUn}>Username</Text>
                     <TextInput style={styles.input}
@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
     submitButtonText: {
         textAlign: 'center',
         color: 'white',
+        fontWeight: 'bold',
+        fontSize: 17,
     },loginText: {
         fontWeight: 'bold',
         fontSize: 32,
@@ -117,24 +119,25 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         fontSize: 17,
         marginTop:50,
-
+        fontWeight: 'bold',
     },
     inputPw: {
         textAlign: 'center',
         paddingTop: 20,
         fontSize: 17,
-        marginTop:10
+        marginTop:10,
+        fontWeight: 'bold',
     },
     input: {
         margin: 5,
-        width: 230,
+        width: 220,
         height: 40,
         borderColor: '#000000',
         borderRadius: 10,
         textAlign: 'center',
         borderWidth: 1,
         backgroundColor:'white',
-        left:'8%'
+        left:'15%'
 
     },errorMsg: {
         color: '#800000',
