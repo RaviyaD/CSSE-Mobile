@@ -10,11 +10,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 class UseDraft extends Component {
     state = {
         key: this.props.route.params.key,
-        companyID: '',
         supplierID: '',
-        address1: '',
-        address2: '',
-        address3: '',
+        site: '',
         item: '',
         date: new Date(),
         quantity: '',
@@ -30,30 +27,53 @@ class UseDraft extends Component {
         pricePerError: '',
 
         numberOrder: 0,
+
+        numberDraft: 0,
+
+        itemList: [],
+        siteList: [],
+        supList: [],
+        supplierList: [],
+        selectedItems: [{item: '', quantity: '',received:0}],
     };
 
     componentDidMount(): void {
         firebase.database().ref('/Draft/' + this.state.key).on('value', (snapshot) => {
             this.setState({
-                companyID: snapshot.val().companyID,
                 supplierID: snapshot.val().supplierID,
-                address1: snapshot.val().addressNo,
-                address2: snapshot.val().addressRoad,
-                address3: snapshot.val().addressCity,
-                item: snapshot.val().item,
+                site: snapshot.val().site,
+                selectedItems: snapshot.val().item,
                 date: new Date(Date.parse(snapshot.val().date)),
-                quantity: snapshot.val().quantity,
                 description: snapshot.val().description,
-                pricePer: snapshot.val().pricePerUnit,
+                supplierList:[...this.state.supplierList,snapshot.val().supplierID]
             });
         });
 
-        firebase.database().ref('Orders').on('value', (snapshot) => {
-            this.setState({
-                numberOrder: snapshot.numChildren()
-            })
+        firebase.database().ref('item').on('value', (snapshot) => {
+            snapshot.forEach((item) => {
+                this.setState((state) => ({
+                    itemList: [...state.itemList,
+                        item.val().item,
+                    ],
+                }));
+            });
         });
 
+        firebase.database().ref('Sites').on('value', (snapshot) => {
+            snapshot.forEach((item) => {
+                this.setState((state) => ({
+                    siteList: [...state.siteList, item.key],
+                }));
+            });
+        });
+
+        firebase.database().ref('suppliers').on('value', (snapshot) => {
+            snapshot.forEach((item) => {
+                this.setState((state) => ({
+                    supList: [...state.supList, item.val()],
+                }));
+            });
+        });
     }
 
     showDatePicker = () => {
@@ -62,19 +82,6 @@ class UseDraft extends Component {
         });
     };
 
-    validateCompanyID = () => {
-        if (this.state.companyID === '') {
-            this.setState({
-                companyIDError: 'Select Company ID!',
-            });
-            return false;
-        } else {
-            this.setState({
-                companyIDError: '',
-            });
-            return true;
-        }
-    };
 
     validateSupplierID = () => {
         if (this.state.supplierID === '') {
@@ -91,9 +98,9 @@ class UseDraft extends Component {
     };
 
     validateAddress = () => {
-        if (this.state.address1 === '' || this.state.address2 === '' || this.state.address3 === '') {
+        if (this.state.site === '') {
             this.setState({
-                addressError: 'Address is required!',
+                addressError: 'Site is required!',
             });
             return false;
         } else {
@@ -104,67 +111,40 @@ class UseDraft extends Component {
         }
     };
 
-    validateQuantity = () => {
-        if (this.state.quantity === '') {
-            this.setState({
-                quantityError: 'Enter quantity of the order!',
-            });
-            return false;
-        } else {
-            this.setState({
-                quantityError: '',
-            });
-            return true;
-        }
-    };
-
-    validatePricePer = () => {
-        if (this.state.pricePer === '') {
-            this.setState({
-                pricePerError: 'Enter item price per 1 quantity',
-            });
-            return false;
-        } else {
-            this.setState({
-                pricePerError: '',
-            });
-            return true;
-        }
-    };
 
     validateItem = () => {
-        if (this.state.item === '') {
-            this.setState({
-                itemError: 'Enter item!',
-            });
-            return false;
-        } else {
-            this.setState({
-                itemError: '',
-            });
-            return true;
-        }
+        let result = false;
+        this.state.selectedItems.map((item) => {
+            if (item.item === '' || item.quantity === '') {
+                this.setState({
+                    itemError: 'Fill all the  items and quantity!',
+                });
+                result = false;
+            } else {
+                this.setState({
+                    itemError: '',
+                });
+                result = true;
+            }
+        });
+        return result
     };
 
     toUseDraft = () => {
-        let cID = this.validateCompanyID();
         let sID = this.validateSupplierID();
-        let qu = this.validateQuantity();
-        let pp = this.validatePricePer();
         let add = this.validateAddress();
         let it = this.validateItem();
         let ID = this.generateOrderId();
-        if (cID && sID && qu && pp && add && it) {
+        if (sID && add && it) {
+            let status = this.checkStatus();
             firebase.database().ref('Orders/' + ID).set({
-                companyID: this.state.companyID,
                 supplierID: this.state.supplierID,
-                item: this.state.item,
-                address: this.state.address1 + ', ' + this.state.address2 + ', ' + this.state.address3,
-                date: new Date(Date.parse(this.state.date)),
+                item: this.state.selectedItems,
+                site: this.state.site,
+                date: this.state.date.toString(),
                 quantity: this.state.quantity,
                 description: this.state.description,
-                pricePerUnit: this.state.pricePer,
-                status: 'Pending',
+                status: status,
             }).then(() => {
                 console.log('Inserted');
                 this.props.navigation.navigate('OrderList');
@@ -179,6 +159,82 @@ class UseDraft extends Component {
     };
 
 
+    loadSupplier = () => {
+        this.setState({
+            supplierList: [],
+        });
+        let list = [];
+        this.state.selectedItems.map((t) => {
+            list = [...list, t.item];
+        });
+        this.state.supList.forEach((item) => {
+            let array = [];
+
+            item.itemList.forEach((block) => {
+                array = [...array, block.item];
+            });
+            if (list.every(v => array.includes(v))) {
+                this.setState((state) => ({
+                    supplierList: [...state.supplierList, item.sname],
+                }));
+            }
+        });
+    };
+
+    // handle click event of the Remove button
+    handleRemoveClick = index => {
+        const list = [...this.state.selectedItems];
+        list.splice(index, 1);
+        this.setState({
+            selectedItems: list,
+        }, () => {
+            console.log(this.state.selectedItems);
+        });
+    };
+
+    // handle click event of the Add button
+    handleAddClick = () => {
+        this.setState((state) => ({
+            selectedItems: [...state.selectedItems, {item: '', quantity: '',received:0}],
+        }));
+    };
+
+    checkStatus = () => {
+        let limit = 100000;
+        let total = 0;
+        let store = this.state.supplierID;
+        let list = [];
+        let sp = "";
+
+        this.state.supList.map( t => {
+            if (t.sname === store){
+                list = t.itemList;
+            }
+        });
+
+        this.state.selectedItems.map((object) => {
+            let name = object.item;
+            let quantity = object.quantity;
+
+            list.map((i) => {
+                if (i.item === name){
+                    if (i.unit === undefined){
+                        sp = "Hold";
+                    }
+                    total += parseInt(quantity) * parseInt(i.unit)
+                }
+
+            })
+        });
+
+        if (total < limit && sp === "Hold")
+            return "Hold";
+        if (total < limit)
+            return "Approved";
+
+        return "Pending";
+    };
+
     render() {
         return (
             <View style={styles.container}>
@@ -188,42 +244,101 @@ class UseDraft extends Component {
                     name="md-menu"
                     size={30}
                 />
-                <Text style={styles.topic}>Use Draft to order</Text>
+                <Text style={styles.topic}>Use Draft</Text>
                 <Text style={styles.refe}>Ref : {this.state.key}</Text>
-                <ScrollView style={styles.scrollView}>
-                    <Text style={styles.inputLabel}>Company ID</Text>
-                    <Picker
-                        selectedValue={this.state.companyID}
-                        style={{height: 50, width: 200}}
-                        onValueChange={(itemValue, itemIndex) => {
-                            this.setState({companyID: itemValue}, () => {
-                                this.validateCompanyID();
-                            });
-                        }
-                        }>
-                        <Picker.Item label="select one" value=""/>
-                        <Picker.Item label="Pearson" value="Pearson"/>
-                        <Picker.Item label="Virtusa" value="Virtusa"/>
-                    </Picker>
-                    <Text style={styles.errorMsg}>{this.state.companyIDError}</Text>
 
-                    <Text style={styles.inputLabel}>Item</Text>
-                    <Picker
-                        selectedValue={this.state.item}
-                        style={{height: 50, width: 200}}
-                        onValueChange={(itemValue, itemIndex) => {
-                            this.setState({item: itemValue}, () => {
-                                this.validateCompanyID();
-                            });
-                        }
-                        }>
-                        <Picker.Item label="select one" value=""/>
-                        <Picker.Item label="Cement" value="Cement"/>
-                        <Picker.Item label="Steel" value="Steel"/>
-                        <Picker.Item label="River Sand" value="River Sand"/>
-                        <Picker.Item label="Wood" value="Wood"/>
-                    </Picker>
+                <ScrollView style={styles.scrollView}>
+
+                    <View style={{flexDirection: 'row'}}>
+                        <View style={{flex: 1}}>
+                            <Text style={styles.inputLabel}>Items</Text>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <TouchableOpacity
+                                style={styles.plusButton}
+                                onPress={
+                                    () => this.handleAddClick()
+                                }>
+                                <Text style={styles.submitButtonText}> + </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {this.state.selectedItems.map((x, i) => {
+                            return (
+                                <View style={{flexDirection: 'row'}}>
+                                    <View style={{flex: 1}}>
+                                        <Picker
+                                            selectedValue={x.item}
+                                            style={{height: 50, width: 150}}
+                                            onValueChange={(itemValue, itemIndex) => {
+                                                this.setState(({selectedItems}) => ({
+                                                    selectedItems: [
+                                                        ...selectedItems.slice(0, i),
+                                                        {
+                                                            ...selectedItems[i],
+                                                            item: itemValue,
+                                                        },
+                                                        ...selectedItems.slice(i + 1),
+                                                    ],
+                                                }), () => {
+                                                    this.loadSupplier();
+                                                    //console.log(this.state.selectedItems)
+                                                });
+                                            }
+                                            }>
+                                            <Picker.Item label="select one" value=""/>
+                                            {this.state.itemList.map((item) => {
+
+                                                return <Picker.Item label={item} value={item}/>;
+
+                                            })}
+                                        </Picker>
+                                    </View>
+
+                                    <View style={{flex: 1}}>
+
+                                        <TextInput
+                                            value={x.quantity}
+                                            style={styles.inputQuantity}
+                                            placeholder="Quantity"
+                                            keyboardType='numeric'
+                                            underlineColorAndroid="transparent"
+                                            autoCapitalize="none"
+                                            onChangeText={(text) => {
+                                                this.setState(({selectedItems}) => ({
+                                                    selectedItems: [
+                                                        ...selectedItems.slice(0, i),
+                                                        {
+                                                            ...selectedItems[i],
+                                                            quantity: text,
+                                                        },
+                                                        ...selectedItems.slice(i + 1),
+                                                    ],
+                                                }), () => {
+                                                    //console.log(this.state.selectedItems)
+                                                });
+                                            }
+                                            }
+                                        />
+                                    </View>
+                                    <View style={{flex: 1, alignItems: 'center'}}>
+                                        <TouchableOpacity
+                                            style={styles.plusButton}
+                                            onPress={() => {
+                                                this.handleRemoveClick(i);
+                                                this.loadSupplier();
+                                            }
+                                            }>
+                                            <Text style={styles.submitButtonText}> - </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            );
+                        },
+                    )}
                     <Text style={styles.errorMsg}>{this.state.itemError}</Text>
+
 
                     <Text style={styles.inputLabel}>Supplier name</Text>
                     <Picker
@@ -237,38 +352,28 @@ class UseDraft extends Component {
 
                         }>
                         <Picker.Item label="select one" value=""/>
-                        <Picker.Item label="A" value="A"/>
-                        <Picker.Item label="B" value="B"/>
+                        {this.state.supplierList.map((item) => (
+                            <Picker.Item label={item} value={item}/>
+                        ))}
                     </Picker>
                     <Text style={styles.errorMsg}>{this.state.supplierIDError}</Text>
 
-                    <Text style={styles.inputLabel}>Address of the Site</Text>
-                    <TextInput
-                        value={this.state.address1}
-                        style={styles.input}
-                        underlineColorAndroid="transparent"
-                        autoCapitalize="none"
-                        placeholder="No:"
-                        onChangeText={(text) => this.setState({address1: text})}/>
-                    <TextInput
-                        value={this.state.address2}
-                        style={styles.input}
-                        underlineColorAndroid="transparent"
-                        autoCapitalize="none"
-                        placeholder="Line 01"
-                        onChangeText={(text) => this.setState({address2: text})}/>
-                    <TextInput
-                        value={this.state.address3}
-                        style={styles.input}
-                        underlineColorAndroid="transparent"
-                        autoCapitalize="none"
-                        placeholder="Line 02"
-                        onChangeText={(text) => {
-                            this.setState({address3: text}, () => {
+                    <Text style={styles.inputLabel}>Site ID</Text>
+                    <Picker
+                        selectedValue={this.state.site}
+                        style={{height: 50, width: 200}}
+                        onValueChange={(itemValue, itemIndex) => {
+                            this.setState({site: itemValue}, () => {
                                 this.validateAddress();
                             });
                         }
-                        }/>
+
+                        }>
+                        <Picker.Item label="select one" value=""/>
+                        {this.state.siteList.map((site) => (
+                            <Picker.Item label={site} value={site}/>
+                        ))}
+                    </Picker>
                     <Text style={styles.errorMsg}>{this.state.addressError}</Text>
 
                     <Text style={styles.inputLabel}>Date<Text
@@ -291,21 +396,6 @@ class UseDraft extends Component {
                         }}
                     />)}
 
-                    <Text style={styles.inputLabel}>Quantity</Text>
-                    <TextInput
-                        value={this.state.quantity}
-                        style={styles.input}
-                        keyboardType='numeric'
-                        underlineColorAndroid="transparent"
-                        autoCapitalize="none"
-                        onChangeText={(text) => {
-                            this.setState({quantity: text}, () => {
-                                this.validateQuantity();
-                            });
-                        }
-                        }
-                    />
-                    <Text style={styles.errorMsg}>{this.state.quantityError}</Text>
 
                     <Text style={styles.inputLabel}>Description</Text>
                     <TextInput
@@ -316,29 +406,12 @@ class UseDraft extends Component {
                         onChangeText={(text) => this.setState({description: text})}
                     />
 
-                    <Text style={styles.inputLabel}>Price of a Item</Text>
-                    <TextInput
-                        value={this.state.pricePer}
-                        style={styles.input}
-                        keyboardType='numeric'
-                        underlineColorAndroid="transparent"
-                        autoCapitalize="none"
-                        onChangeText={(text) => {
-                            this.setState({pricePer: text}, () => {
-                                this.validatePricePer();
-                            });
-                        }
-                        }
-                    />
-                    <Text style={styles.errorMsg}>{this.state.pricePerError}</Text>
-
-
                     <TouchableOpacity
                         style={styles.submitButton}
                         onPress={
-                            () => this.toUseDraft()
+                            () => this.toOrderUpdate()
                         }>
-                        <Text style={styles.submitButtonText}>Order</Text>
+                        <Text style={styles.submitButtonText}> Update </Text>
                     </TouchableOpacity>
                 </ScrollView>
             </View>

@@ -157,8 +157,10 @@ class AddOrder extends Component {
             })
         });
 
-        if (total < limit && sp !== "Hold")
-            return "Placed";
+        if (total < limit && sp === "Hold")
+            return "Hold";
+        if (total < limit)
+            return "Approved";
 
         return "Pending";
     };
@@ -198,6 +200,7 @@ class AddOrder extends Component {
             description: this.state.description,
         }).then(() => {
             console.log(this.state.date);
+            this.props.navigation.navigate('OrderList');
         }).catch(() => {
             console.log('Error');
         });

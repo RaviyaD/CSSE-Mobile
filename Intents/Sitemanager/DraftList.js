@@ -3,6 +3,7 @@ import {Component} from 'react';
 import {StyleSheet, View, Button, FlatList, Text, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import firebase from 'firebase';
+import {ListItem} from 'react-native-elements';
 
 class DraftList extends Component {
     state = {
@@ -32,23 +33,6 @@ class DraftList extends Component {
 
 
     render() {
-        const ItemRender = ({title}) => (
-            <View style={styles.item}>
-                <Text>Ref No:
-                    <Text style={styles.title}>{title}</Text>
-                    <Icon
-                        style={styles.listIcon}
-                        onPress={() => this.toView(title)}
-                        name="arrow-redo-sharp"
-                        size={25}
-                    />
-                </Text>
-            </View>
-        );
-
-        const renderItem = ({item}) => (
-            <ItemRender title={item.title}/>
-        );
         return (
             <View styles={styles.container}>
                 <Icon
@@ -62,7 +46,17 @@ class DraftList extends Component {
                     <FlatList
                         style={styles.list}
                         data={this.state.orderList}
-                        renderItem={renderItem}
+                        renderItem={({ item }) => (
+                            <ListItem
+                                roundAvatar
+                                title={`${item.key}`}
+                                containerStyle={{ borderBottomWidth: 0 }}
+                                onPress={() => {
+                                    this.toView(item.key)
+                                }}
+                                ItemSeparatorComponent={this.renderSeparator}
+                            />
+                        )}
                         keyExtractor={item => item.key}
                     />
                 </ScrollView>

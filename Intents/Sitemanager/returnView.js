@@ -12,6 +12,7 @@ class returnView extends Component {
         listUpdated: [],
         logDate: [],
         logList: [],
+        itemError: false
     };
 
     componentDidMount(): void {
@@ -57,7 +58,7 @@ class returnView extends Component {
             previous = this.state.logList;
         }
 
-        if (log.length > 0) {
+        if (log.length > 0 && !this.state.itemError) {
             firebase.database().ref('Orders/' + this.state.key).update({
                 item: this.state.listUpdated,
                 logList: [...previous, {
@@ -117,6 +118,7 @@ class returnView extends Component {
 
                                             <View style={{flex: 1}}>
                                                 <Text>Received Quantity {i.received}</Text>
+                                                <Text>Max value : {i.quantity-i.received}</Text>
                                                 <TextInput
                                                     defaultValue={0}
                                                     style={styles.inputField}
@@ -125,6 +127,15 @@ class returnView extends Component {
                                                     underlineColorAndroid="transparent"
                                                     autoCapitalize="none"
                                                     onChangeText={(text) => {
+                                                        if (i.received+parseInt(text) > i.quantity){
+                                                            this.setState({
+                                                                itemError:true
+                                                            })
+                                                        }
+                                                        else
+                                                            this.setState({
+                                                                itemError:false
+                                                            })
                                                         this.setState(({listUpdated, list}) => ({
                                                             listUpdated: [
                                                                 ...listUpdated.slice(0, index),
@@ -146,6 +157,7 @@ class returnView extends Component {
                                 ),
                             )
                         }
+                        {this.state.itemError ? <Text style={styles.errorName}>Entered quantities are wrong</Text> : null}
                     </View>
 
 
@@ -214,6 +226,10 @@ const styles = StyleSheet.create({
     topic: {
         fontSize:28,
         fontWeight:'bold'
+    },
+    errorName: {
+        fontSize:10,
+        color:'red'
     }
 });
 export default returnView;

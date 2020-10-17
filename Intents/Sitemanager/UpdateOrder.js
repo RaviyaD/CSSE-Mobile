@@ -219,8 +219,10 @@ class UpdateOrder extends Component {
             })
         });
 
-        if (total < limit && sp !== "Hold")
-            return "Placed";
+        if (total < limit && sp === "Hold")
+            return "Hold";
+        if (total < limit)
+            return "Approved";
 
         return "Pending";
     };
