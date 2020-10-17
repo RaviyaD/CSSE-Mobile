@@ -12,8 +12,9 @@ class Home extends Component{
         orderList:[],
         flatList:[]
     };
+
      componentDidMount(): void {
-        firebase.database().ref('Orders').orderByChild('status').equalTo('Placed')
+        firebase.database().ref('Orders').orderByChild('status').equalTo('Approved')
             .on('value',snapshot => {
                 this.setState({
                     orderList: []
@@ -30,7 +31,7 @@ class Home extends Component{
                     }));
                 });
         })
-    }
+    };
 
     updateSearch = (search) => {
         this.setState({ search });
@@ -68,7 +69,6 @@ class Home extends Component{
     render(){
         const { search } = this.state;
 
-
         return(
             <View>
                 <Icon
@@ -80,11 +80,12 @@ class Home extends Component{
 
                 <Icon
                     style={{ right: 20,position:'absolute' }}
-                    onPress={() => {AsyncStorage.setItem('user_id', null)
+                    onPress={() => {AsyncStorage.setItem('user_id', null);
                         this.props.navigation.navigate('Login')}}
                     name="log-out"
                     size={30}
                 />
+
                 <View style={styles.container}>
                     <Text style={styles.viewTopic}>Logging Details</Text>
                 </View>
