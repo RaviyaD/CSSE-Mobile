@@ -1,6 +1,7 @@
 import React from 'react';
 import {Component} from 'react';
 import {View, Button, FlatList, Text, ScrollView, StyleSheet} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import firebase from 'firebase';
 import { SearchBar,ListItem } from 'react-native-elements';
@@ -11,8 +12,8 @@ class Home extends Component{
         orderList:[],
         flatList:[]
     };
-    componentDidMount(): void {
-        firebase.database().ref('Orders').orderByChild('status').equalTo('Approved')
+     componentDidMount(): void {
+        firebase.database().ref('Orders').orderByChild('status').equalTo('Placed')
             .on('value',snapshot => {
                 this.setState({
                     orderList: []
@@ -74,6 +75,14 @@ class Home extends Component{
                     style={styles.icon}
                     onPress={() => this.props.navigation.openDrawer()}
                     name="md-menu"
+                    size={30}
+                />
+
+                <Icon
+                    style={{ right: 20,position:'absolute' }}
+                    onPress={() => {AsyncStorage.setItem('user_id', null)
+                        this.props.navigation.navigate('Login')}}
+                    name="log-out"
                     size={30}
                 />
                 <View style={styles.container}>

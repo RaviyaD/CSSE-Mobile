@@ -15,6 +15,7 @@ import UseDraft from './Intents/Sitemanager/UseDraft';
 import Budget from "./Intents/Budget";
 import Home from './Intents/Home';
 import returnView from './Intents/Sitemanager/returnView';
+import Login from "./Intents/Login/Login";
 
 const firebaseConfig = {
     apiKey: 'AIzaSyBdjP3em_r5nnmOc0e69TRXxq5kUHGYXNc',
@@ -35,7 +36,7 @@ export default class App extends Component {
 
         return (
             <NavigationContainer>
-                <Drawer.Navigator initialRouteName="Home">
+                <Drawer.Navigator initialRouteName="Login">
                     <Drawer.Screen name="Home" component={Home}/>
                     <Drawer.Screen name="OrderList" component={OrderList}/>
                     <Drawer.Screen name="DraftList" component={DraftList}/>
@@ -69,7 +70,7 @@ export default class App extends Component {
                         title: null,
                         drawerIcon: () => null,
                     }}/>
-
+                    <Drawer.Screen name="Login" component={Login} />
 
                 </Drawer.Navigator>
             </NavigationContainer>
