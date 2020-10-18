@@ -5,7 +5,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {Picker} from '@react-native-community/picker';
 import * as firebase from 'firebase';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import Order from "../Model/Order";
+let order = new Order();
 
 class AddOrder extends Component {
     state = {
